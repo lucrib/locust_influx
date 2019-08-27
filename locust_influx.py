@@ -1,14 +1,17 @@
 from datetime import datetime
 
 from influxdb import InfluxDBClient
+
 from locust import events, runners
 
+__all__ = ['expose_metrics']
 
-def make_record(measurement, tags, fields, time):
+
+def __make_record(measurement, tags, fields, time):
     return [{"measurement": measurement, "tags": tags, "time": time, "fields": fields}]
 
 
-def ingest_data(influxdb_client, node_id, measurement, success):
+def __ingest_data(influxdb_client, node_id, measurement, success):
     def save_to_influxdb(request_type=None, name=None, response_time=None, response_length=None, exception=None,
                          **kwargs):
         time = datetime.utcnow()
@@ -23,7 +26,7 @@ def ingest_data(influxdb_client, node_id, measurement, success):
             'response_time': response_time,
             'response_length': response_length
         }
-        point = make_record(measurement, tags, fields, time)
+        point = __make_record(measurement, tags, fields, time)
         was_successful = influxdb_client.write_points(point)
         if not was_successful:
             print('Failed to save to InfluxDB')
@@ -31,8 +34,8 @@ def ingest_data(influxdb_client, node_id, measurement, success):
     return save_to_influxdb
 
 
-def expose_metrics(influx_host='localhost', influx_port=8086, user='root', pwd='root', database='locust',
-                   measurement='locust_requests'):
+def expose_metrics(influx_host: str = 'localhost', influx_port: int = 8086, user: str = 'root', pwd: str = 'root',
+                   database: str = 'locust', measurement: str = 'locust_requests'):
     influx_client = InfluxDBClient(influx_host, influx_port, user, pwd, database)
     influx_client.create_database(database)
     node_id = 'local'
@@ -42,5 +45,5 @@ def expose_metrics(influx_host='localhost', influx_port=8086, user='root', pwd='
         if runners.locust_runner.options.slave:
             node_id = runners.locust_runner.client_id
 
-    events.request_success += ingest_data(influx_client, node_id, measurement, success=True)
-    events.request_failure += ingest_data(influx_client, node_id, measurement, success=False)
+    events.request_success += __ingest_data(influx_client, node_id, measurement, success=True)
+    events.request_failure += __ingest_data(influx_client, node_id, measurement, success=False)
