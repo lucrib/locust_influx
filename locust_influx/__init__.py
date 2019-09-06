@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from influxdb import InfluxDBClient
-
 from locust import events, runners
 
 __all__ = ['expose_metrics']
@@ -12,8 +11,7 @@ def __make_record(measurement, tags, fields, time):
 
 
 def __ingest_data(influxdb_client, node_id, measurement, success):
-    def save_to_influxdb(request_type=None, name=None, response_time=None, response_length=None, exception=None,
-                         **kwargs):
+    def save_to_influxdb(request_type=None, name=None, response_time=None, response_length=None, exception=None, **_):
         time = datetime.utcnow()
         tags = {
             'node_id': node_id,
