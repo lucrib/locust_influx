@@ -10,7 +10,7 @@ Start a container of grafana locally:
 
 `docker run --hostname grafana --name grafana -d -p 3000:3000`
 
-Create an exmaple of `locustfile.py`
+Create an example of `locustfile.py`
 
 ```python
 from locust import TaskSet, HttpLocust, task
