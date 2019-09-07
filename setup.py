@@ -1,6 +1,9 @@
 from setuptools import setup, find_packages
 
-from __version__ import __version__
+from locust_influx.__version__ import __version__
+
+with open('requirements.txt', 'r') as f:
+    requires = f.read()
 
 with open('README.md', 'r') as f:
     long_description = f.read()
@@ -16,13 +19,22 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(),
+    package_data={'': ['LICENSE']},
+    package_dir={'locust_influx': 'locust_influx'},
+    include_package_data=True,
     python_requires='>=3.6',
+    install_requires=requires,
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Environment :: Plugins",
+        "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
     ],
+    project_urls={
+        'Documentation': 'https://locust_influx.github.io',
+        'Source': 'https://github.com/lucrib/locust_influx',
+    },
 )
