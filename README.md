@@ -21,7 +21,7 @@ expose_metrics(influx_host='localhost',
                influx_port=8086)
 
 
-class GoogleTasks(TaskSet):
+class MyTasks(TaskSet):
     @task
     def get_index(self):
         self.client.post('/')
@@ -32,7 +32,7 @@ class GoogleTasks(TaskSet):
 
 
 class GoogleLocust(HttpLocust):
-    task_set = GoogleTasks
+    task_set = MyTasks
 ```
 
 Run locust:
