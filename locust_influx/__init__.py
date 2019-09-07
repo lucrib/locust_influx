@@ -1,9 +1,12 @@
+import logging
 from datetime import datetime
 
 from influxdb import InfluxDBClient
 from locust import events, runners
 
 __all__ = ['expose_metrics']
+
+log = logging.getLogger('locust_influx')
 
 
 def __make_record(measurement, tags, fields, time):
@@ -27,7 +30,7 @@ def __ingest_data(influxdb_client, node_id, measurement, success):
         point = __make_record(measurement, tags, fields, time)
         was_successful = influxdb_client.write_points(point)
         if not was_successful:
-            print('Failed to save to InfluxDB')
+            log.error('Failed to save point to InfluxDB.')
 
     return save_to_influxdb
 
