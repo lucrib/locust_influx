@@ -1,8 +1,9 @@
 import logging
+import sys
 from datetime import datetime
 
 from influxdb import InfluxDBClient
-from locust import events, runners
+from locust import events
 
 __all__ = ['expose_metrics']
 
@@ -95,11 +96,11 @@ def expose_metrics(influx_host: str = 'localhost',
     influx_client = InfluxDBClient(influx_host, influx_port, user, pwd, database)
     influx_client.create_database(database)
     node_id = 'local'
-    if runners.locust_runner:
-        if runners.locust_runner.options.master:
-            node_id = 'master'
-        if runners.locust_runner.options.slave:
-            node_id = runners.locust_runner.client_id
+    if '--master' in sys.argv:
+        node_id = 'master'
+    if '--slave' in sys.argv:
+        # TODO: Get real ID of slaves form locust somehow
+        node_id = 'slave'
     # Request events
     events.request_success += __persist_request_info(influx_client, node_id, success=True)
     events.request_failure += __persist_request_info(influx_client, node_id, success=False)
