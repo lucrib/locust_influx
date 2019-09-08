@@ -25,7 +25,8 @@ def __ingest_data(influxdb_client, node_id, measurement, success):
         }
         fields = {
             'response_time': response_time,
-            'response_length': response_length
+            'response_length': response_length,
+            'counter': 1
         }
         point = __make_record(measurement, tags, fields, time)
         was_successful = influxdb_client.write_points(point)
