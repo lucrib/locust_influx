@@ -45,6 +45,19 @@
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
         "type": "dashboard"
+      },
+      {
+        "datasource": "${DS_INFLUXDB}",
+        "enable": true,
+        "hide": false,
+        "iconColor": "rgba(255, 96, 96, 1)",
+        "limit": 100,
+        "name": "Locust Events",
+        "query": "SELECT * FROM \"locust_events\"",
+        "showIn": 0,
+        "tags": [],
+        "tagsColumn": "locust",
+        "type": "tags"
       }
     ]
   },
@@ -315,7 +328,7 @@
       ],
       "decimals": 0,
       "description": "Total amount of requests done during the time period.",
-      "format": "short",
+      "format": "none",
       "gauge": {
         "maxValue": 100,
         "minValue": 0,
@@ -1305,8 +1318,8 @@
     "list": []
   },
   "time": {
-    "from": "2019-09-07T16:24:59.659Z",
-    "to": "2019-09-07T16:26:09.459Z"
+    "from": "2019-09-08T16:45:04.654Z",
+    "to": "2019-09-08T16:46:11.947Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -1326,5 +1339,5 @@
   "timezone": "browser",
   "title": "Locust",
   "uid": "0I8QfHcWk",
-  "version": 22
+  "version": 25
 }
