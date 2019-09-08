@@ -5,29 +5,28 @@ from locust_influx import expose_metrics
 expose_metrics()
 
 
-class GoogleTasks(TaskSet):
-    min_wait = 1000
-    max_wait = 1000
+class MyTasks(TaskSet):
 
     @task
-    def get_google_home(self):
+    def get_home(self):
         self.client.get('/')
 
     @task
-    def do_google_search_fail(self):
-        self.client.post('/complete/search?q=test')
+    def head_home(self):
+        self.client.head('/')
 
     @task
-    def do_google_search_success(self):
-        self.client.get('/complete/search?q=test')
+    def delete_home(self):
+        self.client.delete('/')
+
+    @task
+    def post_home(self):
+        self.client.post('/.')
+
+    @task
+    def put_home(self):
+        self.client.put('/')
 
 
-class GoogleLocust(HttpLocust):
-    task_set = GoogleTasks
-    host = 'https://www.google.com'
-
-
-if __name__ == '__main__':
-    expose_metrics()
-    x = GoogleLocust()
-    x.run()
+class MyLocust(HttpLocust):
+    task_set = MyTasks
