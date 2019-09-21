@@ -2,7 +2,7 @@ from locust import TaskSet, HttpLocust, task
 
 from locust_influx import expose_metrics
 
-expose_metrics()
+expose_metrics(interval_ms=2000)
 
 
 class MyTasks(TaskSet):
