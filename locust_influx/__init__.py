@@ -1,6 +1,8 @@
 import logging
 import sys
+import traceback
 from datetime import datetime
+from typing import Callable
 
 import gevent
 from influxdb import InfluxDBClient
@@ -26,7 +28,7 @@ def __make_data_point(measurement: str, tags: dict, fields: dict, time: datetime
     return {"measurement": measurement, "tags": tags, "time": time, "fields": fields}
 
 
-def __listen_for_locust_events(node_id: str, event: str):
+def __listen_for_locust_events(node_id: str, event: str) -> Callable:
     """
     Persist locust event such as hatching started or stopped to influxdb.
 
@@ -48,23 +50,24 @@ def __listen_for_locust_events(node_id: str, event: str):
     return event_handler
 
 
-def __listen_for_requests_events(node_id, success, measurement: str = 'locust_requests'):
+def __listen_for_requests_events(node_id, success, measurement: str = 'locust_requests') -> Callable:
     """
-    Persis request information to influxdb.
+    Persist request information to influxdb.
 
     :param node_id: The id of the node reporting the event.
     :param measurement: The measurement where to save this point.
     :param success: Flag the info to as successful request or not
     """
 
-    def event_handler(request_type=None, name=None, response_time=None, response_length=None, exception=None, **_):
+    def event_handler(request_type=None, name=None, response_time=None, response_length=None, exception=None,
+                      **_) -> None:
         time = datetime.utcnow()
         tags = {
             'node_id': node_id,
             'request_type': request_type,
             'name': name,
             'success': success,
-            'exception': str(exception),
+            'exception': repr(exception),
         }
         fields = {
             'response_time': response_time,
@@ -72,6 +75,30 @@ def __listen_for_requests_events(node_id, success, measurement: str = 'locust_re
             'counter': 1,  # TODO: Review the need of this field
         }
         point = __make_data_point(measurement, tags, fields, time)
+        cache.append(point)
+
+    return event_handler
+
+
+def __listen_for_locust_errors(node_id: str) -> Callable:
+    """
+    Persist locust errors to InfluxDB.
+
+    :param node_id: The id of the node reporting the error.
+    :return: None
+    """
+
+    def event_handler(exception: Exception = None, tb=None, **_) -> None:
+        time = datetime.utcnow()
+        tags = {
+            'exception_tag': repr(exception),
+        }
+        fields = {
+            'node_id': node_id,
+            'exception': repr(exception),
+            'traceback': "".join(traceback.format_tb(tb)),
+        }
+        point = __make_data_point('locust_exceptions', tags, fields, time)
         cache.append(point)
 
     return event_handler
@@ -146,11 +173,14 @@ def expose_metrics(influx_host: str = 'localhost',
     events.master_stop_hatching += __listen_for_locust_events(node_id, event='master_stop_hatching')
     events.locust_start_hatching += __listen_for_locust_events(node_id, event='locust_start_hatching')
     events.locust_stop_hatching += __listen_for_locust_events(node_id, event='locust_stop_hatching')
+    # Locust exceptions
+    events.locust_error += __listen_for_locust_errors(node_id)
 
     def last_flush_on_quitting():
         global stop_flag
         stop_flag = True
         flush_worker.join()
         __flush_points(influxdb_client)
+
     # Flush last points when quiting
     events.quitting += last_flush_on_quitting

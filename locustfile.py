@@ -1,3 +1,5 @@
+from random import randint
+
 from locust import TaskSet, HttpLocust, task
 
 from locust_influx import expose_metrics
@@ -21,11 +23,20 @@ class MyTasks(TaskSet):
 
     @task
     def post_home(self):
-        self.client.post('/.')
+        self.client.post('/')
 
     @task
     def put_home(self):
         self.client.put('/')
+
+    @task
+    def cause_fail_get_request(self):
+        n = randint(1, 3)
+        self.client.get(f'/invalid-path-{n}')
+
+    @task
+    def cause_locust_error(self):
+        raise Exception('Test Error')
 
 
 class MyLocust(HttpLocust):
