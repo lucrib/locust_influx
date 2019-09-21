@@ -1,3 +1,4 @@
-locustio==0.11.0
-influxdb==5.2.2
 locust
+locustio==0.11.0
+gevent>=1.4.0
+influxdb==5.2.2
