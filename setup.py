@@ -2,9 +2,6 @@ from setuptools import setup, find_packages
 
 from locust_influx.__version__ import __version__
 
-with open('requirements.txt', 'r') as f:
-    requires = f.read()
-
 with open('README.md', 'r') as f:
     long_description = f.read()
 
@@ -19,11 +16,14 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(),
-    package_data={'': ['LICENSE']},
+    package_data={'': ['LICENSE', 'README.md']},
     package_dir={'locust_influx': 'locust_influx'},
     include_package_data=True,
     python_requires='>=3.6',
-    install_requires=requires,
+    install_requires=[
+        'locustio>=0.12.2',
+        'influxdb>=5.2.2',
+    ],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Plugins",

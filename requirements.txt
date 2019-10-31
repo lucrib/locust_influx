@@ -1,2 +1,0 @@
-locustio>=0.12.2
-influxdb>=5.2.2
