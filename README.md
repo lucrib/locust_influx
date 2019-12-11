@@ -8,11 +8,11 @@ and follow the progress through [Grafana](https://grafana.com/) charts.
 
 Start an InfluxDB container locally:
 
-`docker run -d --name influxdb -d -p 8086:8086`
+`docker run -d --name influxdb -d -p 8086:8086 influxdb`
 
 Start a Grafana container locally:
 
-`docker run -d --name grafana -d -p 3000:3000`
+`docker run -d --name grafana -d -p 3000:3000 grafana/grafana`
 
 Crete a new [python virtual environment](https://docs.python.org/3/tutorial/venv.html) and install `locust_influx`:
 
