@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-from locust_influx.__version__ import __version__
+__version__ = '0.2.1'
 
 with open('README.md', 'r') as f:
     long_description = f.read()
